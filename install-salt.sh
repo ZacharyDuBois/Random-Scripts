@@ -11,13 +11,14 @@
 # - Edit the MASTERIP line with the IP of your salt master.
 # - Run.
 ###
+MASTERIP='127.0.0.1'
 
 apt-get update
 apt-get install -y python-software-properties
 add-apt-repository -y ppa:saltstack/salt
 apt-get update
 apt-get install -y salt-minion
-sed -i 's/#master: salt/master: 10.132.253.109/g' /etc/salt/minion
+sed -i 's/#master: salt/master: '$MASTERIP'/g' /etc/salt/minion
 service salt-minion restart
 
 exit 0
