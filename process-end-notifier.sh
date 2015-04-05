@@ -25,9 +25,9 @@ pushoverSend() {
   pushoverStatus=$?
   if [[ "$pushoverStatus" == 0 ]]
   then
-    echo "$info Pushover message sent successfully: $message"
+    echo "Pushover message sent successfully: $message"
   else
-    echo "$warn Pushover failed to send message: $message"
+    echo "Pushover failed to send message: $message"
   fi
 }
 
