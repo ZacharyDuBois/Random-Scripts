@@ -32,7 +32,7 @@ pushoverSend() {
 }
 
 retryCount=0
-while ps aux | grep -v grep | grep "$processName" > /dev/null
+while pgrep "$processName" > /dev/null
 do
   sleep 1
 done
