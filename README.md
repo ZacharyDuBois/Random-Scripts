@@ -12,6 +12,4 @@ This is why:
 
 ## Like stuff in this repo?
 
-Tips help out a lot.
-
-BTC: `1NYzSE8xmorvrJJjt9a5riYf5jkKqSCGD3`
+Like these scripts and think any of them are worth a some bits? Send them here `1918S94g6ZHPtVayirSu4MSyqzsWqhmL3x`
