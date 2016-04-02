@@ -18,8 +18,8 @@
 ################################################################################MASTERIP='127.0.0.1'
 
 apt-get update
-apt-get install -y python-software-properties
-add-apt-repository -y ppa:saltstack/salt
+echo 'deb http://repo.saltstack.com/apt/ubuntu/14.04/amd64/latest trusty main' > /etc/apt/sources.list.d/saltstack.list
+curl https://repo.saltstack.com/apt/ubuntu/14.04/amd64/latest/SALTSTACK-GPG-KEY.pub | sudo apt-key add -
 apt-get update
 apt-get install -y salt-minion
 sed -i 's/#master: salt/master: '$MASTERIP'/g' /etc/salt/minion
