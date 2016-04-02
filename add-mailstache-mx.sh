@@ -12,9 +12,9 @@
 # - DOCTL v1 or higher (You must be authenticated)                             #
 ################################################################################
 # TO RUN:                                                                      #
-#   Download it.                                                               #
-#   Change the permissions 'chmod #x add-mailstache-mx.sh'.                    #
-#   Run with './add-mailstache-mx.sh'.                                         #
+# - Download it.                                                               #
+# - Change the permissions 'chmod +x add-mailstache-mx.sh'.                    #
+# - Run with './add-mailstache-mx.sh'.                                         #
 ################################################################################
 # Made by Zachary DuBois. Licensed under MIT.                                  #
 # https://zacharydubois.me                                                     #
