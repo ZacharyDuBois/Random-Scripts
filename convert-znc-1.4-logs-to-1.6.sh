@@ -1,23 +1,26 @@
 #!/usr/bin/env bash
 
-###
-# Converter for ZNC logs 1.4 -> 1.6
-##
-#
-# This is a quick script to edit all your ZNC logs to the new ZNC log path and
-#   naming style in 1.6. Make sure to take a backup oh your logs when running.
-# ZNC should not be running when you run this script.
-#
-# Thanks to rascul (From Freenode) for the expressions.
-#
-# Cavets: This currently only works if the logs module was enabled by the user.
-#   If you have it enabled as a global mod or network mod, this script *will not
-#   work* without some changes Also, if you are using a custom logging format in
-#   ZNC, this will not work.
-#
-# TO RUN:
-# - Download and run in the log directory.
-###
+################################################################################
+# Converter for ZNC logs 1.4 to 1.6                                            #
+################################################################################
+#                                                                              #
+# This is a quick script to edit all your ZNC logs to the new ZNC log path and #
+# naming style in 1.6. Make sure to take a backup oh your logs when running.   #
+# *** ZNC should not be running when you run this script ***                   #
+#                                                                              #
+################################################################################
+# Caveats:                                                                     #
+# This currently only works if the logs module was enabled by the user. If you #
+# have it enabled as a global mod or network mod, this script *will not work*  #
+# without some changes. Also, if you are using a custom logging format in ZNC, #
+# this will not work.                                                          #
+################################################################################
+# TO RUN:                                                                      #
+# - Download and run in the log directory.                                     #
+################################################################################
+# Made by Zachary DuBois. Licensed under MIT.                                  #
+# https://zacharydubois.me                                                     #
+################################################################################
 
 echo "Please make sure you have a backup of all your ZNC files before running this script!"
 read -p "Do you have a backup? (Y/n): " -n 1 -r confirm

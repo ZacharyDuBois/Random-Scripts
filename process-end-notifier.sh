@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
 
-###
-# Process End Notifier
-##
-#
-# This script checks for when a process ends and then sends a Pushover alert to
-#   let you know.
-#
-# TO RUN:
-# - Download and change the settings to the right values. They are
-#     self-explanitory.
-# - Run the script in a screen.
-###
+################################################################################
+# Process End Notifier                                                         #
+################################################################################
+#                                                                              #
+# This script checks for when a process ends and then sends a Pushover alert   #
+# to let you know.                                                             #
+################################################################################
+# TO RUN:                                                                      #
+# - Download and change the settings to the right values. They are             #
+#   self-explanatory.                                                          #
+################################################################################
+# Made by Zachary DuBois. Licensed under MIT.                                  #
+# https://zacharydubois.me                                                     #
+################################################################################
 processName=""
 pushoverAppKey=""
 pushoverUserKey=""

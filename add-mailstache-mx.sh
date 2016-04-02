@@ -1,21 +1,24 @@
 #!/usr/bin/env bash
 
-###
-# DigitalOcean Mailstache MX Adder.
-##
-#
-# Use this to quickly add the Mailstache MX records to any domain on DigitalOcean.
-#
-# TO RUN:
-# - Download it.
-# - Edit 'auth' to the correct DigitalOcean APIv2 key with write access.
-# - Change the permissions 'chmod +x add-mailstache-mx.sh'.
-# - Run with './add-mailstache-mx.sh'.
-###
-auth="YOURAPIV2KEYHERE"
-
-
-
+################################################################################
+# DigitalOcean Mailstache MX Adder.                                            #
+################################################################################
+#                                                                              #
+# Use this to quickly add the Mailstache MX records to any domain on           #
+# DigitalOcean.                                                                #
+#                                                                              #
+################################################################################
+# Dependancices:                                                               #
+# - DOCTL v1 or higher (You must be authenticated)                             #
+################################################################################
+# TO RUN:                                                                      #
+#   Download it.                                                               #
+#   Change the permissions 'chmod #x add-mailstache-mx.sh'.                    #
+#   Run with './add-mailstache-mx.sh'.                                         #
+################################################################################
+# Made by Zachary DuBois. Licensed under MIT.                                  #
+# https://zacharydubois.me                                                     #
+################################################################################
 
 add='true'
 while [[ $add == 'true' ]]

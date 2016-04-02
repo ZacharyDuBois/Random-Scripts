@@ -1,17 +1,22 @@
 #!/usr/bin/env bash
 
-###
-# Domain whois checker
-##
-#
-# This script lets you run other scripts or commands when a domain's whois
-#   information is updated/changed.
-#
-# TO RUN:
-# - Download and change the settings to the right values. They are
-#     self-explanitory.
-# - Add to a cronjob or something.
-###
+################################################################################
+# Domain WHOIS Checker                                                         #
+################################################################################
+#                                                                              #
+# This script lets you run other scripts or commands when a domain's WHOIS     #
+# information is updated/changed.                                              #
+#                                                                              #
+################################################################################
+# TO RUN:                                                                      #
+# - Download and change the settings to the right values. They are             #
+#   self-explanatory.                                                          #
+# - Add to a cronjob or something that will run it automatically at an         #
+#   interval                                                                   #
+################################################################################
+# Made by Zachary DuBois. Licensed under MIT.                                  #
+# https://zacharydubois.me                                                     #
+################################################################################
 
 DOMAIN="zacharydubois.me"
 LAST="last.txt"
