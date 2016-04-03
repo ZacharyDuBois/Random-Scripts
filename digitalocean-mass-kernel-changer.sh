@@ -1,29 +1,27 @@
 #!/usr/bin/env bash
 
-###
-# DigitalOcean Kernel Changer.
-##
-#
-# Use this to quickly change your Droplet's kernel on DigitalOcean.
-# The IDs needed for the configuration can be found using the API.
-# https://developers.digitalocean.com/
-#
-# TO RUN:
-# - Download it.
-# - Edit 'kernelID' to the correct DigitalOcean kernel ID that you want to change.
-# - Edit 'dropletIDs' to an array of droplet IDs you want to update (Save it for later. Once you
-#     make a list once, you won't need to again :P ).
-# - Edit 'apiKey' with a DigitalOcean APIv2 key with write access.
-# - Edit 'forcePowerOff' to true if you want this script to also poweroff your droplets. Note that
-#     this is not recommned because this will force a poweroff. If you have SaltStack, run
-#     `salt '*' system.poweroff` and it will willingly shutdown all your droplets that are connected.
-# - Make sure your droplets are off unless you are having this script do that, then run.
-###
-kernelID=""
-dropletIDs=({000000,111111,222222})
-apiKey=""
+################################################################################
+# DigitalOcean Kernel Changer                                                  #
+################################################################################
+#                                                                              #
+# This is a quick mass kernel changer for older OS' on DigitalOcean's          #
+# infrastructure.                                                              #
+#                                                                              #
+################################################################################
+# Dependancies:                                                                #
+# - DOCTL v1 or higher. (You must be authenticated)                            #
+################################################################################
+# TO RUN:                                                                      #
+# - Download and run as a normal script.                                       #
+# - If you want to to force power down the droplet, change the value of        #
+#   'forcePowerOff' to true. It is recommended you power down your droplets    #
+#   from the command line/console.                                             #
+################################################################################
+# Made by Zachary DuBois. Licensed under MIT.                                  #
+# https://zacharydubois.me                                                     #
+################################################################################
 forcePowerOff=false
-
+disableASCIIArt=false
 # Done editing :)
 
 
@@ -36,133 +34,187 @@ warn="[$(tput setaf 3) WARN $(tput sgr0)]"
 info="[$(tput setaf 6) INFO $(tput sgr0)]"
 finish="[$(tput setaf 4) DONE $(tput sgr0)]"
 
-
-# Check settings
-if [[ $apiKey == "" ]] || [[ $kernelID == "" ]]
+# echo ascii art
+if [[ $disableASCIIArt == false ]]
 then
-  echo "$fail Please correct the settings."
-  exit 1
-else
-  echo "$info Settings are set. Moving on."
+  echo '                                 `-:/+osssoo+/:.                                                    '
+  echo '                              `-+oosssssssssssyys+-                                                 '
+  echo '                            `:+oooooo//:::/+osyyyyyo-    .......`                                   '
+  echo '                           ./++oo+/:---.`    `-/syyyy+`  ://////-                                   '
+  echo '                          ./++++oo+/::-----.    `:++++:  ://////-                                   '
+  echo '                         `//++++:`                -::::: ://////-                                   '
+  echo '                      `` :++++/`                  -/////`.------.....`   `....                      '
+  echo '                  .:/+++`/++++`                   -/////`        :///.   -sss+                      '
+  echo '                -+oooooo./ooo:                    ``````         -:::`   -ooo+                      '
+  echo '              `+ssso+/-.``-:/-                                            ````/ooooooo              '
+  echo '             `ossso-`                                      `````    ....      +sssssss              '
+  echo '             :ssso```                                      oooo:   `////      +sssssss              '
+  echo '             +sss/ /.                                      osss/   `::::````` /ooooooo              '
+  echo '             :sss+ o:                                      `````    ````/ooo+ ````````              '
+  echo '             `syys:+s-      `.--:::/:::-..`                             +ssso         `             '
+  echo '              .oyysoss:`.-/osssyyyyyyyyyysoo+:-``                       `....       `-              '
+  echo '               `/oys+/+ossoo+/::::::/+oossyyyyyso+/-.`  `..```          ``..      `-:               '
+  echo '                 `:/++/--..----------....-:/oosyyyyysso/-....--------:::--`   `.://.                '
+  echo '                 `-...--:::-----------:::::-----:/+ossyyyyso+/:------......:/+++:`                  '
+  echo '                  `````                   ```.....```..-:/++oossooo+++++++/:-.`                     '
+  echo '                                                  ```         `````````                             '
+  echo '                                                                                                    '
+  echo '               ``           ``                 ``       ``                                          '
+  echo ' /+++++++/-`  :oo.         :oo. `-`           `oo-  `:/+oo++:.                                      '
+  echo ' +ss....:+so- ./:`         ./:` +s-           `ss- :os+:---/os+`                                    '
+  echo ' +ss      /ss.-// `:/++/:::-//./ss+// .:/++/. `ss-:ss:      `oso `-/++/:``:/++/:` `:/++/:` :/::/+/:`'
+  echo ' +ss      .ss/:ss os/..oso./so`-ss/-. ::-.-ss-`ss-oso        /ss:os+..-:-os/../so`./-..+s+ +so-.-os/'
+  echo ' +ss      -ss::ss os:..+s: /so `ss-   `-://ss/`ss-+ss.       +ss+so     /ss++++oo.`-://+ss +s+   +s+'
+  echo ' +ss    `-os+ :ss -so//:.  /so `ss-  -ss-.`os/`ss-`oso-`   ./ss::ss.    :ss.   ` `os/../ss +s+   +s+'
+  echo ' +ss+++oos+-  :ss /soo+++:`:so  oso//:ss//oos/`ss- `:ossoooss/.  /ss+/+o-:os+/+o+.os+/+oss +s+   +s+'
+  echo ' ........`    `..-so```.os/`..   .-.` `--. `.` ..`    `.--..       .--.    .--.`  `.--` .. `..   `.`'
+  echo '                 .+so++oo/`                                                                         '
+  echo
+  echo
 fi
+# Get list of droplets
+echo "$running Getting droplet list..."
+doctl compute droplet list --format ID,Image,Name,Region
+
+droplets=()
+add='yes'
+while [[ $add == 'yes' ]]
+do
+  read -p "$running Droplet ID: " -r id
+  droplets+=($id)
+  read -p "$running Add another? [Y/n]: " -r confirm
+  if [[ $confirm =~ ^[Yy]$ ]]
+  then
+    add='yes'
+  elif [[ $confirm =~ ^[Nn]$ ]]
+  then
+    add='no'
+    echo "$ok Droplets set."
+  else
+    echo "$fail Unknwon option."
+    exit 1
+  fi
+done
+
+# List kernels.
+echo "$running Listing avalable kernels and their IDs for the first droplet."
+doctl compute droplet kernels ${droplets[0]} --format ID,Name,Version
+read -p "$running Kernel ID: " -r kernelID
+echo "$ok Selected kernel $kernelID."
 
 # Check $forcePowerOff
 if [[ $forcePowerOff == true ]]
 then
   # Confirm the power off.
-  echo "$warn You have selected to have this script shutdown your Droplets. This is not recomened."
-  read -p "$warn Are you sure? (Y/n): " -n 1 -r confirm
-  echo
-  if [[ ! $confirm =~ ^[Y]$ ]]
+  echo "$warn You have selected to have this script power off your droplets. This is not recomened."
+  read -p "$running Are you sure you want to continue? [Y/n]: " -r confirm
+  if [[ $confirm =~ ^[Yy]$ ]]
   then
-    echo "$fail You did not confirm. Please edit forcePowerOff to false."
+    echo "$ok Confirmed."
+  elif [[ $confirm =~ ^[Nn]$ ]]
+  then
+    echo "$fail You did not confirm. Please edit forcePowerOff to false if you do not want this."
     exit 1
   else
-    echo "$ok Confirmed. Powering them off now."
+    echo "$fail Unknown option."
+    exit 1
   fi
 
   # Power off the droplets.
-  for droplet in ${dropletIDs[@]}
+  echo "$running Powering off droplets..."
+  for droplet in ${droplets[@]}
   do
-    echo "$running Powering off Droplet $droplet now."
-    curl -s -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $apiKey" -d '{"type":"shutdown"}' "https://api.digitalocean.com/v2/droplets/$droplet/actions" > /dev/null
+    # Only apply header to first droplet
+    if [[ $droplet == ${droplet[${#droplets[@]}-1]} ]]
+    then
+      echo "$notice We will wait for the last droplet to power off."
+      doctl compute droplet-action power-off $droplet --no-header --wait
+    elif [[ $droplet == ${droplets[0]} ]]
+    then
+      doctl compute droplet-action power-off $droplet --format Status,Type,StartedAt,CompletedAt
+    else
+      doctl compute droplet-action power-off $droplet --no-header
+    fi
   done
 
-  echo "$ok Sent poweroff requests to Droplets."
-  echo "$info Giving 60 seconds for Droplets to shutdown."
-  sleep 60
+  echo "$ok Droplets powered off."
 fi
-
-echo "$ok Changing kernels."
 
 # Confirm droplet
-echo "$notice Please make sure all the Droplets you listed are ready and off before confirming."
-read -p "$notice Are they ready and off? (Y/n): " -n 1 -r confirm
-echo
-if [[ ! $confirm =~ ^[Y]$ ]]
-then
-  echo "$fail Exiting. Run again when you are ready."
-  exit 1
-else
-  echo "$ok Confirmed. Moving on."
-fi
-
-# Confirm kernel ID.
-echo "$warn Please make sure that $kernelID is the kernel you wanted."
-read -p "$warn Is $kernelID correct? (Y/n): " -n 1 -r confirm
-echo
-if [[ ! $confirm =~ ^[Y]$ ]]
-then
-  echo "$fail Exiting. Please check the kernel you provided."
-  exit 1
-else
-  echo "$ok Confirmed. Changing kernels now."
-fi
-
-# Change the kernels.
-for droplet in ${dropletIDs[@]}
+echo "$notice Please make sure all the droplets you listed are ready and off before confirming."
+ready='no'
+while [[ $ready == 'no' ]]
 do
-  echo "$running changing kernel of Droplet $droplet to $kernelID now."
-  curl -s -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $apiKey" -d "{\"type\":\"change_kernel\",\"kernel\":$kernelID}" "https://api.digitalocean.com/v2/droplets/$droplet/actions" > /dev/null
+  read -p "$running Are they ready and off? [Y/n]: " -r confirm
+  if [[ $confirm =~ ^[Yy]$ ]]
+  then
+    ready='yes'
+    echo "$ok Confirmed."
+  elif [[ $confirm =~ ^[Nn]$ ]]
+  then
+    echo "$info Please encure they are off and ready. Confirm when they are."
+  else
+    echo "$fail Unknown option."
+  fi
 done
 
-# Let them change
-echo "$info Giving 10 seconds for kernels to change."
-sleep 10
+# Change the kernels.
+echo "$notice Begining kernel change."
+for droplet in ${droplets[@]}
+do
+  # Only apply header to first droplet
+  if [[ $droplet == ${droplet[${#droplets[@]}-1]} ]]
+  then
+    echo "$notice We will wait for the last droplet to change."
+    # tmp fix
+    doctl compute droplet-action change-kernel $droplet --kernel-id $kernelID --wait
+    #doctl compute droplet-action change-kernel $droplet --kernel-id $kernelID --no-header --wait
+  elif [[ $droplet == ${droplets[0]} ]]
+  then
+    # tmp fix
+    doctl compute droplet-action change-kernel $droplet --kernel-id $kernelID
+    # DOCTL has a bug where change-kernel doesnt have header flags
+    #doctl compute droplet-action change-kernel $droplet --kernel-id $kernelID --format Status,Type,StartedAt,CompletedAt
+  else
+    # tmp fix
+    doctl compute droplet-action change-kernel $droplet --kernel-id $kernelID
+    #doctl compute droplet-action change-kernel $droplet --kernel-id $kernelID --no-header
+  fi
+done
+
+echo "$ok Kernels changed."
 
 # Power them back on?
-echo "$notice Would you like this script to power back on your Droplets?"
-read -p "$notice Power them on? (Y/n): " -n 1 -r confirm
-echo
-if [[ $confirm =~ ^[Y]$ ]]
+echo "$notice Would you like this script to power back on your droplets?"
+read -p "$notice Power them on? [Y/n]: " -r confirm
+if [[ $confirm =~ ^[Yy]$ ]]
 then
-  echo "$ok Powering them on now."
-  for droplet in ${dropletIDs[@]}
+  echo "$running Powering on now."
+  for droplet in ${droplets[@]}
   do
-    echo "$running Powering on Droplet $droplet now."
-    curl -s -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $apiKey" -d '{"type":"power_on"}' "https://api.digitalocean.com/v2/droplets/$droplet/actions" > /dev/null
+    # Only apply header to first droplet
+    if [[ $droplet == ${droplet[${#droplets[@]}-1]} ]]
+    then
+      echo "$notice We will wait for the last droplet to power on."
+      doctl compute droplet-action power-on $droplet --no-header --wait
+
+    elif [[ $droplet == ${droplets[0]} ]]
+    then
+      doctl compute droplet-action power-on $droplet --format Status,Type,StartedAt,CompletedAt
+    else
+      doctl compute droplet-action power-on $droplet --no-header
+    fi
   done
-  echo "$ok Droplets were queued to start."
+  echo "$ok Droplets started."
+elif [[ $confirm =~ ^[Nn]$ ]]
+then
+  echo "$info We will not power back on your droplets."
+else
+  echo "$fail Unknown option."
+  exit 1
 fi
-echo
-echo
-echo
 
-sleep 1
-
-echo '                                 `-:/+osssoo+/:.                                                    '
-echo '                              `-+oosssssssssssyys+-                                                 '
-echo '                            `:+oooooo//:::/+osyyyyyo-    .......`                                   '
-echo '                           ./++oo+/:---.`    `-/syyyy+`  ://////-                                   '
-echo '                          ./++++oo+/::-----.    `:++++:  ://////-                                   '
-echo '                         `//++++:`                -::::: ://////-                                   '
-echo '                      `` :++++/`                  -/////`.------.....`   `....                      '
-echo '                  .:/+++`/++++`                   -/////`        :///.   -sss+                      '
-echo '                -+oooooo./ooo:                    ``````         -:::`   -ooo+                      '
-echo '              `+ssso+/-.``-:/-                                            ````/ooooooo              '
-echo '             `ossso-`                                      `````    ....      +sssssss              '
-echo '             :ssso```                                      oooo:   `////      +sssssss              '
-echo '             +sss/ /.                                      osss/   `::::````` /ooooooo              '
-echo '             :sss+ o:                                      `````    ````/ooo+ ````````              '
-echo '             `syys:+s-      `.--:::/:::-..`                             +ssso         `             '
-echo '              .oyysoss:`.-/osssyyyyyyyyyysoo+:-``                       `....       `-              '
-echo '               `/oys+/+ossoo+/::::::/+oossyyyyyso+/-.`  `..```          ``..      `-:               '
-echo '                 `:/++/--..----------....-:/oosyyyyysso/-....--------:::--`   `.://.                '
-echo '                 `-...--:::-----------:::::-----:/+ossyyyyso+/:------......:/+++:`                  '
-echo '                  `````                   ```.....```..-:/++oossooo+++++++/:-.`                     '
-echo '                                                  ```         `````````                             '
-echo '                                                                                                    '
-echo '               ``           ``                 ``       ``                                          '
-echo ' /+++++++/-`  :oo.         :oo. `-`           `oo-  `:/+oo++:.                                      '
-echo ' +ss....:+so- ./:`         ./:` +s-           `ss- :os+:---/os+`                                    '
-echo ' +ss      /ss.-// `:/++/:::-//./ss+// .:/++/. `ss-:ss:      `oso `-/++/:``:/++/:` `:/++/:` :/::/+/:`'
-echo ' +ss      .ss/:ss os/..oso./so`-ss/-. ::-.-ss-`ss-oso        /ss:os+..-:-os/../so`./-..+s+ +so-.-os/'
-echo ' +ss      -ss::ss os:..+s: /so `ss-   `-://ss/`ss-+ss.       +ss+so     /ss++++oo.`-://+ss +s+   +s+'
-echo ' +ss    `-os+ :ss -so//:.  /so `ss-  -ss-.`os/`ss-`oso-`   ./ss::ss.    :ss.   ` `os/../ss +s+   +s+'
-echo ' +ss+++oos+-  :ss /soo+++:`:so  oso//:ss//oos/`ss- `:ossoooss/.  /ss+/+o-:os+/+o+.os+/+oss +s+   +s+'
-echo ' ........`    `..-so```.os/`..   .-.` `--. `.` ..`    `.--..       .--.    .--.`  `.--` .. `..   `.`'
-echo '                 .+so++oo/`                                                                         '
+# Done
 echo
-echo
-echo "$finish Enjoy the new kernel on your Droplets :)"
+echo "$finish Enjoy the new kernel on your droplets."
 exit 0
