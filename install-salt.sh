@@ -22,7 +22,7 @@ echo 'deb http://repo.saltstack.com/apt/ubuntu/14.04/amd64/latest trusty main' >
 curl https://repo.saltstack.com/apt/ubuntu/14.04/amd64/latest/SALTSTACK-GPG-KEY.pub | sudo apt-key add -
 apt-get update
 apt-get install -y salt-minion
-sed -i 's/#master: salt/master: '$MASTERIP'/g' /etc/salt/minion
+sed -i 's/#master: salt/master: '"$MASTERIP"'/g' /etc/salt/minion
 service salt-minion restart
 
 exit 0

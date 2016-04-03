@@ -26,15 +26,13 @@ pushoverSend() {
   message=$1
   curl -s --form-string "token=$pushoverAppKey" --form-string "user=$pushoverUserKey" --form-string "priority=0" --form-string "title=$pushoverTitle" --form-string "message=$message" https://api.pushover.net/1/messages.json > /dev/null
   pushoverStatus=$?
-  if [[ "$pushoverStatus" == 0 ]]
-  then
+  if [[ "$pushoverStatus" == 0 ]]; then
     echo "Pushover message sent successfully: $message"
   else
     echo "Pushover failed to send message: $message"
   fi
 }
 
-retryCount=0
 while pgrep "$processName" > /dev/null
 do
   sleep 1

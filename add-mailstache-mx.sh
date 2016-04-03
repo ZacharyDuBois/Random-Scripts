@@ -26,11 +26,11 @@ while [[ $add == true ]]
 do
   doctl compute domain list --format 'Domain'
   read -p "Domain name: " -r domain
-  doctl compute domain records create $domain --record-type 'MX' --record-data 'mx.mailstache.io.' --record-priority 1
-  doctl compute domain records create $domain --record-type 'MX' --record-data 'mx2.mailstache.io.' --record-priority 5 --no-header
-  doctl compute domain records create $domain --record-type 'MX' --record-data 'mx3.mailstache.io.' --record-priority 5 --no-header
-  doctl compute domain records create $domain --record-type 'MX' --record-data 'mx4.mailstache.io.' --record-priority 10 --no-header
-  doctl compute domain records create $domain --record-type 'MX' --record-data 'mx5.mailstache.io.' --record-priority 10 --no-header
+  doctl compute domain records create "$domain" --record-type 'MX' --record-data 'mx.mailstache.io.' --record-priority 1
+  doctl compute domain records create "$domain" --record-type 'MX' --record-data 'mx2.mailstache.io.' --record-priority 5 --no-header
+  doctl compute domain records create "$domain" --record-type 'MX' --record-data 'mx3.mailstache.io.' --record-priority 5 --no-header
+  doctl compute domain records create "$domain" --record-type 'MX' --record-data 'mx4.mailstache.io.' --record-priority 10 --no-header
+  doctl compute domain records create "$domain" --record-type 'MX' --record-data 'mx5.mailstache.io.' --record-priority 10 --no-header
   echo "Added Mailstache to $domain"
   read -p "Add another? [Y/n]: " -n 1 -r confirm
   echo

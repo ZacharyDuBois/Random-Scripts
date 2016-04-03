@@ -33,7 +33,7 @@ else
   echo "Moving on."
 fi
 
-if [[ "$(ps aux | grep znc | grep -v grep)" != "" ]]
+if [[ "$(pgrep znc)" != "" ]]
 then
   echo "I see ZNC may be running. Please make sure ZNC is not running when you run this script."
   read -p "Is ZNC running? (Y/n): " -n 1 -r confirm
@@ -62,7 +62,7 @@ do
   logNetwork=$(echo "${log%%_*}" | tr '[:upper:]' '[:lower:]')
 
   logChannel=${log%_*}
-  logChannel="$(echo ${logChannel#*_} | tr '[:upper:]' '[:lower:]')"
+  logChannel="$(echo "${logChannel#*_}" | tr '[:upper:]' '[:lower:]')"
 
   logDate=${log%.*}
   logDate=${logDate##*_}

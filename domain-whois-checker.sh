@@ -29,7 +29,7 @@ then
   echo "No change."
 else
   echo "Change. Logged change."
-  mv $LAST $LAST.$(date '+%Y-%m-%d-%H%M%S')
+  mv "$LAST" "$LAST.$(date '+%Y-%m-%d-%H%M%S')"
   # Any other commands when changes happen
 fi
 
