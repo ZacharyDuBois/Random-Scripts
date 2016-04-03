@@ -78,62 +78,62 @@ doctl compute droplet list --format ID,Image,Name,Region
 
 droplets=()
 add='yes'
-while [[ $add == 'yes' ]]
-do
+while [[ $add == 'yes' ]]; do
   read -p "$running Droplet ID: " -r id
   droplets+=($id)
-  read -p "$running Add another? [Y/n]: " -r confirm
-  if [[ $confirm =~ ^[Yy]$ ]]
-  then
-    add='yes'
-  elif [[ $confirm =~ ^[Nn]$ ]]
-  then
-    add='no'
-    echo "$ok Droplets set."
-  else
-    echo "$fail Unknwon option."
-    exit 1
-  fi
+  check=false
+  while [[ $check == false ]]; do
+    read -p "$running Add another? [Y/n]: " -r confirm
+    if [[ $confirm =~ ^[Yy]$ ]]; then
+      add='yes'
+      check=true
+    elif [[ $confirm =~ ^[Nn]$ ]]; then
+      add='no'
+      check=true
+      echo "$ok Droplets set."
+    else
+      check=false
+      echo "$fail Unknwon option."
+    fi
+  done
 done
 
 # List kernels.
 echo "$running Listing avalable kernels and their IDs for the first droplet."
-doctl compute droplet kernels ${droplets[0]} --format ID,Name,Version
+doctl compute droplet kernels "${droplets[0]}" --format ID,Name,Version
 read -p "$running Kernel ID: " -r kernelID
 echo "$ok Selected kernel $kernelID."
 
 # Check $forcePowerOff
-if [[ $forcePowerOff == true ]]
-then
+if [[ $forcePowerOff == true ]]; then
   # Confirm the power off.
   echo "$warn You have selected to have this script power off your droplets. This is not recomened."
-  read -p "$running Are you sure you want to continue? [Y/n]: " -r confirm
-  if [[ $confirm =~ ^[Yy]$ ]]
-  then
-    echo "$ok Confirmed."
-  elif [[ $confirm =~ ^[Nn]$ ]]
-  then
-    echo "$fail You did not confirm. Please edit forcePowerOff to false if you do not want this."
-    exit 1
-  else
-    echo "$fail Unknown option."
-    exit 1
-  fi
+  check=false
+  while [[ $check == false ]]; do
+    read -p "$running Are you sure you want to continue? [Y/n]: " -r confirm
+    if [[ $confirm =~ ^[Yy]$ ]]; then
+      check=true
+      echo "$ok Confirmed."
+    elif [[ $confirm =~ ^[Nn]$ ]]; then
+      echo "$fail You did not confirm. Please edit forcePowerOff to false if you do not want this."
+      exit 1
+    else
+      check=false
+      echo "$fail Unknown option."
+    fi
+  done
 
   # Power off the droplets.
   echo "$running Powering off droplets..."
-  for droplet in ${droplets[@]}
-  do
+  for droplet in "${droplets[@]}"; do
     # Only apply header to first droplet
-    if [[ $droplet == ${droplet[${#droplets[@]}-1]} ]]
-    then
+    if [[ $droplet == "${droplet[${#droplets[@]}-1]}" ]]; then
       echo "$notice We will wait for the last droplet to power off."
-      doctl compute droplet-action power-off $droplet --no-header --wait
-    elif [[ $droplet == ${droplets[0]} ]]
-    then
-      doctl compute droplet-action power-off $droplet --format Status,Type,StartedAt,CompletedAt
+      doctl compute droplet-action power-off "$droplet" --no-header --wait
+    elif [[ $droplet == "${droplets[0]}" ]]; then
+      doctl compute droplet-action power-off "$droplet" --format Status,Type,StartedAt,CompletedAt
     else
-      doctl compute droplet-action power-off $droplet --no-header
+      doctl compute droplet-action power-off "$droplet" --no-header
     fi
   done
 
@@ -142,42 +142,38 @@ fi
 
 # Confirm droplet
 echo "$notice Please make sure all the droplets you listed are ready and off before confirming."
-ready='no'
-while [[ $ready == 'no' ]]
-do
+check=false
+while [[ $check == false ]]; do
   read -p "$running Are they ready and off? [Y/n]: " -r confirm
-  if [[ $confirm =~ ^[Yy]$ ]]
-  then
-    ready='yes'
+  if [[ $confirm =~ ^[Yy]$ ]]; then
+    check=true
     echo "$ok Confirmed."
-  elif [[ $confirm =~ ^[Nn]$ ]]
-  then
+  elif [[ $confirm =~ ^[Nn]$ ]]; then
+    check=false
     echo "$info Please encure they are off and ready. Confirm when they are."
   else
+    check=false
     echo "$fail Unknown option."
   fi
 done
 
 # Change the kernels.
 echo "$notice Begining kernel change."
-for droplet in ${droplets[@]}
-do
+for droplet in "${droplets[@]}"; do
   # Only apply header to first droplet
-  if [[ $droplet == ${droplet[${#droplets[@]}-1]} ]]
-  then
+  if [[ $droplet == "${droplet[${#droplets[@]}-1]}" ]]; then
     echo "$notice We will wait for the last droplet to change."
     # tmp fix
-    doctl compute droplet-action change-kernel $droplet --kernel-id $kernelID --wait
+    doctl compute droplet-action change-kernel "$droplet" --kernel-id "$kernelID" --wait
     #doctl compute droplet-action change-kernel $droplet --kernel-id $kernelID --no-header --wait
-  elif [[ $droplet == ${droplets[0]} ]]
-  then
+  elif [[ $droplet == "${droplets[0]}" ]]; then
     # tmp fix
-    doctl compute droplet-action change-kernel $droplet --kernel-id $kernelID
+    doctl compute droplet-action change-kernel "$droplet" --kernel-id "$kernelID"
     # DOCTL has a bug where change-kernel doesnt have header flags
     #doctl compute droplet-action change-kernel $droplet --kernel-id $kernelID --format Status,Type,StartedAt,CompletedAt
   else
     # tmp fix
-    doctl compute droplet-action change-kernel $droplet --kernel-id $kernelID
+    doctl compute droplet-action change-kernel "$droplet" --kernel-id "$kernelID"
     #doctl compute droplet-action change-kernel $droplet --kernel-id $kernelID --no-header
   fi
 done
@@ -186,33 +182,32 @@ echo "$ok Kernels changed."
 
 # Power them back on?
 echo "$notice Would you like this script to power back on your droplets?"
-read -p "$notice Power them on? [Y/n]: " -r confirm
-if [[ $confirm =~ ^[Yy]$ ]]
-then
-  echo "$running Powering on now."
-  for droplet in ${droplets[@]}
-  do
-    # Only apply header to first droplet
-    if [[ $droplet == ${droplet[${#droplets[@]}-1]} ]]
-    then
-      echo "$notice We will wait for the last droplet to power on."
-      doctl compute droplet-action power-on $droplet --no-header --wait
-
-    elif [[ $droplet == ${droplets[0]} ]]
-    then
-      doctl compute droplet-action power-on $droplet --format Status,Type,StartedAt,CompletedAt
-    else
-      doctl compute droplet-action power-on $droplet --no-header
-    fi
-  done
-  echo "$ok Droplets started."
-elif [[ $confirm =~ ^[Nn]$ ]]
-then
-  echo "$info We will not power back on your droplets."
-else
-  echo "$fail Unknown option."
-  exit 1
-fi
+check=false
+while [[ $check == false ]]; do
+  read -p "$notice Power them on? [Y/n]: " -r confirm
+  if [[ $confirm =~ ^[Yy]$ ]]; then
+    check=true
+    echo "$running Powering on now."
+    for droplet in "${droplets[@]}"; do
+      # Only apply header to first droplet
+      if [[ $droplet == "${droplet[${#droplets[@]}-1]}" ]]; then
+        echo "$notice We will wait for the last droplet to power on."
+        doctl compute droplet-action power-on "$droplet" --no-header --wait
+      elif [[ $droplet == "${droplets[0]}" ]]; then
+        doctl compute droplet-action power-on "$droplet" --format Status,Type,StartedAt,CompletedAt
+      else
+        doctl compute droplet-action power-on "$droplet" --no-header
+      fi
+    done
+    echo "$ok Droplets started."
+  elif [[ $confirm =~ ^[Nn]$ ]]; then
+    check=true
+    echo "$info We will not power back on your droplets."
+  else
+    check=false
+    echo "$fail Unknown option."
+  fi
+done
 
 # Done
 echo
