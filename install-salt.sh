@@ -15,8 +15,8 @@
 ################################################################################
 # Made by Zachary DuBois. Licensed under MIT.                                  #
 # https://zacharydubois.me                                                     #
-################################################################################MASTERIP='127.0.0.1'
-
+# https://github.com/ZacharyDuBois/Random-Scripts/blob/master/LICENSE.md       #
+################################################################################
 apt-get update
 echo 'deb http://repo.saltstack.com/apt/ubuntu/14.04/amd64/latest trusty main' > /etc/apt/sources.list.d/saltstack.list
 curl https://repo.saltstack.com/apt/ubuntu/14.04/amd64/latest/SALTSTACK-GPG-KEY.pub | sudo apt-key add -

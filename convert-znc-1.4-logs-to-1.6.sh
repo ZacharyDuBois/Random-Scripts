@@ -20,8 +20,8 @@
 ################################################################################
 # Made by Zachary DuBois. Licensed under MIT.                                  #
 # https://zacharydubois.me                                                     #
+# https://github.com/ZacharyDuBois/Random-Scripts/blob/master/LICENSE.md       #
 ################################################################################
-
 echo "Please make sure you have a backup of all your ZNC files before running this script!"
 read -p "Do you have a backup? (Y/n): " -n 1 -r confirm
 echo

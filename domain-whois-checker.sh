@@ -16,8 +16,8 @@
 ################################################################################
 # Made by Zachary DuBois. Licensed under MIT.                                  #
 # https://zacharydubois.me                                                     #
+# https://github.com/ZacharyDuBois/Random-Scripts/blob/master/LICENSE.md       #
 ################################################################################
-
 DOMAIN="zacharydubois.me"
 LAST="last.txt"
 CURRENT="current.txt"

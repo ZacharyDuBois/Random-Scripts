@@ -17,6 +17,7 @@
 ################################################################################
 # Made by Zachary DuBois. Licensed under MIT.                                  #
 # https://zacharydubois.me                                                     #
+# https://github.com/ZacharyDuBois/Random-Scripts/blob/master/LICENSE.md       #
 ################################################################################
 saveLocation="/home/user/ipsum.txt"
 sumCommands=({sha512sum,sha384sum,sha256sum,sha224sum,sha1sum,md5sum})
