@@ -18,3 +18,5 @@ Like these scripts and think any of them are worth a some bits? Send them here
 `1918S94g6ZHPtVayirSu4MSyqzsWqhmL3x`.
 You can also see when I make stuff and do stuff via my
 [blog](https://zacharydubois.me)!
+
+You may also like [shellcheck](http://www.shellcheck.net) which is heavily used in this repository :)
