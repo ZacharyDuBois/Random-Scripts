@@ -8,7 +8,7 @@
 # infrastructure.                                                              #
 #                                                                              #
 ################################################################################
-# Dependancies:                                                                #
+# Dependencies:                                                                #
 # - DOCTL v1 or higher. (You must be authenticated)                            #
 ################################################################################
 # TO RUN:                                                                      #
@@ -94,13 +94,13 @@ while [[ $add == 'yes' ]]; do
       echo "$ok Droplets set."
     else
       check=false
-      echo "$fail Unknwon option."
+      echo "$fail Unknown option."
     fi
   done
 done
 
 # List kernels.
-echo "$running Listing avalable kernels and their IDs for the first droplet."
+echo "$running Listing available kernels and their IDs for the first droplet."
 doctl compute droplet kernels "${droplets[0]}" --format ID,Name,Version
 read -p "$running Kernel ID: " -r kernelID
 echo "$ok Selected kernel $kernelID."
@@ -108,7 +108,7 @@ echo "$ok Selected kernel $kernelID."
 # Check $forcePowerOff
 if [[ $forcePowerOff == true ]]; then
   # Confirm the power off.
-  echo "$warn You have selected to have this script power off your droplets. This is not recomened."
+  echo "$warn You have selected to power off your droplets. This is not recommended."
   check=false
   while [[ $check == false ]]; do
     read -p "$running Are you sure you want to continue? [Y/n]: " -r confirm
@@ -151,7 +151,7 @@ while [[ $check == false ]]; do
     echo "$ok Confirmed."
   elif [[ $confirm =~ ^[Nn]$ ]]; then
     check=false
-    echo "$info Please encure they are off and ready. Confirm when they are."
+    echo "$info Please ensure they are off and ready. Confirm when they are."
   else
     check=false
     echo "$fail Unknown option."
@@ -159,7 +159,7 @@ while [[ $check == false ]]; do
 done
 
 # Change the kernels.
-echo "$notice Begining kernel change."
+echo "$notice Beginning kernel change."
 for droplet in "${droplets[@]}"; do
   # Only apply header to first droplet
   if [[ $droplet == "${droplet[${#droplets[@]}-1]}" ]]; then
@@ -182,7 +182,7 @@ done
 echo "$ok Kernels changed."
 
 # Power them back on?
-echo "$notice Would you like this script to power back on your droplets?"
+echo "$notice Would you like this script to power on your droplets?"
 check=false
 while [[ $check == false ]]; do
   read -p "$notice Power them on? [Y/n]: " -r confirm
