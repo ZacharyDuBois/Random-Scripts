@@ -130,11 +130,11 @@ if [[ $forcePowerOff == true ]]; then
     # Only apply header to first droplet
     if [[ $droplet == "${droplet[${#droplets[@]}-1]}" ]]; then
       echo "$notice We will wait for the last droplet to power off."
-      doctl compute droplet-action power-off "$droplet" --no-header --wait
+      doctl compute droplet-action power-off "$droplet" --no-header --wait --format Status,Type,StartedAt,CompletedAt
     elif [[ $droplet == "${droplets[0]}" ]]; then
       doctl compute droplet-action power-off "$droplet" --format Status,Type,StartedAt,CompletedAt
     else
-      doctl compute droplet-action power-off "$droplet" --no-header
+      doctl compute droplet-action power-off "$droplet" --no-header --format Status,Type,StartedAt,CompletedAt
     fi
   done
 
@@ -164,18 +164,11 @@ for droplet in "${droplets[@]}"; do
   # Only apply header to first droplet
   if [[ $droplet == "${droplet[${#droplets[@]}-1]}" ]]; then
     echo "$notice We will wait for the last droplet to change."
-    # tmp fix
-    doctl compute droplet-action change-kernel "$droplet" --kernel-id "$kernelID" --wait
-    #doctl compute droplet-action change-kernel $droplet --kernel-id $kernelID --no-header --wait
+    doctl compute droplet-action change-kernel $droplet --kernel-id $kernelID --no-header --wait --format Status,Type,StartedAt,CompletedAt
   elif [[ $droplet == "${droplets[0]}" ]]; then
-    # tmp fix
-    doctl compute droplet-action change-kernel "$droplet" --kernel-id "$kernelID"
-    # DOCTL has a bug where change-kernel doesnt have header flags
-    #doctl compute droplet-action change-kernel $droplet --kernel-id $kernelID --format Status,Type,StartedAt,CompletedAt
+    doctl compute droplet-action change-kernel $droplet --kernel-id $kernelID --format Status,Type,StartedAt,CompletedAt
   else
-    # tmp fix
-    doctl compute droplet-action change-kernel "$droplet" --kernel-id "$kernelID"
-    #doctl compute droplet-action change-kernel $droplet --kernel-id $kernelID --no-header
+    doctl compute droplet-action change-kernel $droplet --kernel-id $kernelID --no-header --format Status,Type,StartedAt,CompletedAt
   fi
 done
 
@@ -193,11 +186,11 @@ while [[ $check == false ]]; do
       # Only apply header to first droplet
       if [[ $droplet == "${droplet[${#droplets[@]}-1]}" ]]; then
         echo "$notice We will wait for the last droplet to power on."
-        doctl compute droplet-action power-on "$droplet" --no-header --wait
+        doctl compute droplet-action power-on "$droplet" --no-header --wait --format Status,Type,StartedAt,CompletedAt
       elif [[ $droplet == "${droplets[0]}" ]]; then
         doctl compute droplet-action power-on "$droplet" --format Status,Type,StartedAt,CompletedAt
       else
-        doctl compute droplet-action power-on "$droplet" --no-header
+        doctl compute droplet-action power-on "$droplet" --no-header --format Status,Type,StartedAt,CompletedAt
       fi
     done
     echo "$ok Droplets started."
