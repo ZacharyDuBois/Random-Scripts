@@ -12,6 +12,12 @@ This is why:
 
 ![Repetitive Tasks](https://i.destroy.tokyo/Repetitive-Tasks.png)
 
+## Mailing List
+
+To receive updates and information about this project, please subscribe to my
+[mailing list](https://we.destroy.tokyo/Projects-Email-List) and select the
+projects you would like to be notified about.
+
 ## Like stuff in this repo?
 
 Like these scripts and think any of them are worth a some bits? Send them here
