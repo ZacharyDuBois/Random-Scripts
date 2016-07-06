@@ -84,7 +84,7 @@ while [[ $add == 'yes' ]]; do
   droplets+=($id)
   check=false
   while [[ $check == false ]]; do
-    read -p "$running Add another? [Y/n]: " -r confirm
+    read -n 1 -p "$running Add another? [Y/n]: " -r confirm
     if [[ $confirm =~ ^[Yy]$ ]]; then
       add='yes'
       check=true
