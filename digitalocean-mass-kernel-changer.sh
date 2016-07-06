@@ -101,7 +101,7 @@ done
 
 # List kernels.
 echo "$running Listing available kernels and their IDs for the first droplet."
-doctl compute droplet kernels "${droplets[0]}" --format ID,Name,Version
+doctl compute droplet kernels "${droplets[0]}" --format ID,Name,Version | sort -n
 read -p "$running Kernel ID: " -r kernelID
 echo "$ok Selected kernel $kernelID."
 
